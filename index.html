@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#f97316">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Зарплата">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Калькулятор зарплаты</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'Courier New', monospace;
+      color: #e0e0e0;
+      padding: 24px 16px 48px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .header .sub {
+      font-size: 11px;
+      letter-spacing: 6px;
+      color: #f97316;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      letter-spacing: 2px;
+    }
+    .header .line {
+      width: 60px; height: 2px;
+      background: #f97316;
+      margin: 10px auto 0;
+    }
+
+    .card {
+      max-width: 440px;
+      margin: 0 auto 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: #999;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .field input[type="number"] {
+      width: 100%;
+      padding: 11px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 20px;
+      font-family: 'Courier New', monospace;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .field input[type="number"]:focus {
+      border-color: rgba(249,115,22,0.6);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 22px; height: 22px;
+      accent-color: #f97316;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .checkbox-row label {
+      font-size: 14px;
+      color: #ccc;
+      cursor: pointer;
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 18px;
+      padding: 16px;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-family: 'Courier New', monospace;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { opacity: 0.82; transform: scale(0.99); }
+
+    .result-title {
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: #f97316;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .result-line .lbl { color: #999; }
+    .result-line .val { font-weight: bold; color: #e0e0e0; }
+    .result-line .val.red { color: #f87171; }
+    .result-line .val.green { color: #4ade80; }
+
+    .divider { border-top: 1px solid rgba(255,255,255,0.12); margin: 12px 0; }
+
+    .total-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      padding: 14px 16px;
+      background: rgba(249,115,22,0.12);
+      border: 1px solid rgba(249,115,22,0.4);
+      border-radius: 8px;
+    }
+    .total-box .lbl {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #f97316;
+      text-transform: uppercase;
+    }
+    .total-box .val {
+      font-size: 26px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    /* Install banner */
+    #install-banner {
+      display: none;
+      max-width: 440px;
+      margin: 0 auto 16px;
+      padding: 12px 16px;
+      background: rgba(249,115,22,0.15);
+      border: 1px solid rgba(249,115,22,0.5);
+      border-radius: 10px;
+      font-size: 13px;
+      color: #ccc;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    #install-banner span { flex: 1; }
+    #install-btn {
+      padding: 8px 14px;
+      background: #f97316;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: 'Courier New', monospace;
+    }
+
+    #result { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Баннер установки -->
+  <div id="install-banner">
+    <span>📲 Добавить на главный экран</span>
+    <button id="install-btn">Установить</button>
+  </div>
+
+  <div class="header">
+    <div class="sub">Транснефть-Восток</div>
+    <h1>КАЛЬКУЛЯТОР ЗАРПЛАТЫ</h1>
+    <div class="line"></div>
+  </div>
+
+  <div class="card">
+    <div class="field">
+      <label>Дневных смен (08:00 – 20:00)</label>
+      <input type="number" id="дневные" min="0" value="0" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Ночных смен (20:00 – 08:00)</label>
+      <input type="number" id="ночные" min="0" value="0" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Дней на вахте</label>
+      <input type="number" id="вахта" min="0" value="0" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Праздничных часов</label>
+      <input type="number" id="праздник" min="0" value="0" inputmode="numeric">
+    </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="премия">
+      <label for="премия">Включить премию 30%</label>
+    </div>
+
+    <button class="btn" onclick="рассчитать()">РАССЧИТАТЬ</button>
+  </div>
+
+  <div class="card" id="result">
+    <div class="result-title">Расчёт</div>
+
+    <div class="result-line">
+      <span class="lbl">Часов отработано</span>
+      <span class="val" id="r-часы"></span>
+    </div>
+    <div class="result-line">
+      <span class="lbl">Повременная (оклад)</span>
+      <span class="val" id="r-повременная"></span>
+    </div>
+    <div class="result-line">
+      <span class="lbl">Совмещение 15%</span>
+      <span class="val" id="r-совмещение"></span>
+    </div>
+    <div class="result-line">
+      <span class="lbl">Надбавка за стаж 13%</span>
+      <span class="val" id="r-стаж"></span>
+    </div>
+    <div class="result-line">
+      <span class="lbl">Районный коэф. 70%</span>
+      <span class="val" id="r-рк"></span>
+    </div>
+    <div class="result-line">
+      <span class="lbl">Северная надбавка 80%</span>
+      <span class="val" id="r-север"></span>
+    </div>
+    <div class="result-line" id="row-ночные" style="display:none">
+      <span class="lbl">Доплата за ночные 40%</span>
+      <span class="val" id="r-ночные"></span>
+    </div>
+    <div class="result-line" id="row-праздник" style="display:none">
+      <span class="lbl">Праздничные (×2)</span>
+      <span class="val" id="r-праздник"></span>
+    </div>
+    <div class="result-line" id="row-премия" style="display:none">
+      <span class="lbl">Премия 30%</span>
+      <span class="val" id="r-премия"></span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="result-line">
+      <span class="lbl">Начислено</span>
+      <span class="val" id="r-начислено"></span>
+    </div>
+    <div class="result-line">
+      <span class="lbl">НДФЛ 13%</span>
+      <span class="val red" id="r-ндфл"></span>
+    </div>
+    <div class="result-line">
+      <span class="lbl">Вахтовая надбавка</span>
+      <span class="val green" id="r-вахтовая"></span>
+    </div>
+
+    <div class="total-box">
+      <span class="lbl">К выплате</span>
+      <span class="val" id="r-итог"></span>
+    </div>
+  </div>
+
+  <script>
+    // Регистрация Service Worker (для офлайн-работы)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+
+    // PWA install prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('install-banner').style.display = 'flex';
+    });
+    document.getElementById('install-btn').addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        document.getElementById('install-banner').style.display = 'none';
+      }
+      deferredPrompt = null;
+    });
+    window.addEventListener('appinstalled', () => {
+      document.getElementById('install-banner').style.display = 'none';
+    });
+
+    // Константы
+    const ОКЛАД = 41217;
+    const СОВМ_ОКЛАД = 44768;
+    const НОРМА = 164.33;
+    const СТАЖ = 0.13;
+    const СОВМ = 0.15;
+    const РК = 0.70;
+    const СЕВЕР = 0.80;
+    const НОЧНЫЕ = 0.40;
+    const ПРЕМИЯ = 0.30;
+    const НДФЛ = 0.13;
+    const ВАХТА_ДЕНЬ = 600;
+
+    function fmt(n) {
+      return Math.round(n).toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function рассчитать() {
+      const дневные  = +document.getElementById('дневные').value  || 0;
+      const ночные   = +document.getElementById('ночные').value   || 0;
+      const вахта    = +document.getElementById('вахта').value    || 0;
+      const праздник = +document.getElementById('праздник').value || 0;
+      const сПремией = document.getElementById('премия').checked;
+
+      const дЧасы  = дневные * 11;
+      const нЧасы7 = ночные * 7;
+      const нЧасы4 = ночные * 4;
+      const всего  = дЧасы + нЧасы7 + нЧасы4;
+
+      const ставка     = ОКЛАД / НОРМА;
+      const ставкаСовм = (СОВМ_ОКЛАД / НОРМА) * СОВМ;
+
+      const повременная = ставка * всего;
+      const совмещение  = ставкаСовм * всего;
+      const стаж        = (повременная + совмещение) * СТАЖ;
+      const база        = повременная + совмещение + стаж;
+      const рк          = база * РК;
+      const север       = база * СЕВЕР;
+      const ночнаяДоп   = ставка * нЧасы7 * НОЧНЫЕ;
+      const праздникСум = ставка * праздник * 2;
+      const базаПремии  = база + рк + север + ночнаяДоп;
+      const премия      = сПремией ? базаПремии * ПРЕМИЯ : 0;
+      const начислено   = базаПремии + премия + праздникСум;
+      const ндфл        = начислено * НДФЛ;
+      const вахтовая    = вахта * ВАХТА_ДЕНЬ;
+      const итог        = начислено - ндфл + вахтовая;
+
+      document.getElementById('r-часы').textContent        = всего.toFixed(1) + ' ч';
+      document.getElementById('r-повременная').textContent = fmt(повременная);
+      document.getElementById('r-совмещение').textContent  = fmt(совмещение);
+      document.getElementById('r-стаж').textContent        = fmt(стаж);
+      document.getElementById('r-рк').textContent          = fmt(рк);
+      document.getElementById('r-север').textContent       = fmt(север);
+      document.getElementById('r-начислено').textContent   = fmt(начислено);
+      document.getElementById('r-ндфл').textContent        = '−' + fmt(ндфл);
+      document.getElementById('r-вахтовая').textContent    = '+' + fmt(вахтовая);
+      document.getElementById('r-итог').textContent        = fmt(итог);
+
+      const rowН = document.getElementById('row-ночные');
+      if (ночнаяДоп > 0) {
+        document.getElementById('r-ночные').textContent = fmt(ночнаяДоп);
+        rowН.style.display = 'flex';
+      } else { rowН.style.display = 'none'; }
+
+      const rowП = document.getElementById('row-праздник');
+      if (праздникСум > 0) {
+        document.getElementById('r-праздник').textContent = fmt(праздникСум);
+        rowП.style.display = 'flex';
+      } else { rowП.style.display = 'none'; }
+
+      const rowПр = document.getElementById('row-премия');
+      if (премия > 0) {
+        document.getElementById('r-премия').textContent = fmt(премия);
+        rowПр.style.display = 'flex';
+      } else { rowПр.style.display = 'none'; }
+
+      const result = document.getElementById('result');
+      result.style.display = 'block';
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+</body>
+</html>
